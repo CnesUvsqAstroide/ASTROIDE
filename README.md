@@ -11,16 +11,15 @@ unified interface through ADQL, a standard language for querying  databases in a
 
 Please make sure that Scala 2.11.x is installed. 
 
-    $ git clone https://github.com/MBrahem/ASTROIDE
+	$ git clone https://github.com/MBrahem/ASTROIDE
 	
 Initialize an environment variable called `ASTROIDE_HOME` to include the directory where you cloned this repository
 
-
-        $ export ASTROIDE_HOME=<path to ASTROIDE directory>
+	$ export ASTROIDE_HOME=<path to ASTROIDE directory>
 
 Example: 
 
-		$ export ASTROIDE_HOME=/home/hadoop/ASTROIDE-master/
+	$ export ASTROIDE_HOME=/home/hadoop/ASTROIDE-master/
 		
 Then, compile the project as follows:
 

@@ -9,25 +9,29 @@ unified interface through ADQL, a standard language for querying  databases in a
 
 ## Compile
 
-Please make sure that Scala 2.11.x is installed before compilation. 
+Please make sure that Scala 2.11.x is installed. 
 
-    ./gradlew build
-	 
+    $ git clone https://github.com/MBrahem/ASTROIDE
+	
+Initialize an environment variable called `ASTROIDE_HOME` to include the directory where you cloned this repository
 
-# Requirements
-
-
-- This version requires Spark 2.2.x and Hadoop 2.7+ installed .
-don
-- Initialize an environment variable called `ASTROIDE_HOME` to include the directory where you cloned this repository
-
-		$ git clone https://github.com/MBrahem/ASTROIDE
 
         $ export ASTROIDE_HOME=<path to ASTROIDE directory>
 
 Example: 
 
 		$ export ASTROIDE_HOME=/home/hadoop/ASTROIDE-master/
+		
+Then, compile the project as follows:
+
+	$ ./gradlew build
+	 
+
+# Requirements
+
+
+- This version requires Spark 2.2.x and Hadoop 2.7+ installed .
+
     
 - Add jars in ''conf/spark-defaults.conf'' by adding these lines:
 
@@ -45,24 +49,23 @@ These libraries already exists in `libs` directory, for more details please refe
 
 
 
-
 ## Input Data 
 
 ASTROIDE supports reading ONLY input format csv or compressed csv.
 
-You can download example of astronomical data [here](https://github.com/MBrahem/ASTROIDE/tree/master/ExampleData) or all GAIA DR1 [here](http://cdn.gea.esac.esa.int/Gaia/gdr1/gaia_source/csv/) and put downloaded files in HDFS.
+You can download example of astronomical data [here](https://github.com/CnesUvsqAstroide/ASTROIDE/tree/master/ExampleData) or all GAIA DR1 [here](http://cdn.gea.esac.esa.int/Gaia/gdr1/gaia_source/csv/) and put downloaded files on HDFS.
 
 Example:
 
 	$ cd $ASTROIDE_HOME/ExampleData
 	$ hdfs dfs -mkdir data
-    $ hdfs dfs -put * data/
+	$ hdfs dfs -put * data/
     
-ASTROIDE allows users to use data whose coordinates are expressed according to the International Celestial Reference System [ICRS](https://hpiers.obspm.fr/icrs-pc/icrs/icrs.html). Other coordinate systems will be supported in future versions. 
+ASTROIDE allows to use data whose coordinates are expressed according to the International Celestial Reference System [ICRS](https://hpiers.obspm.fr/icrs-pc/icrs/icrs.html). Other coordinate systems will be supported in future versions. 
 
 ## Partitioning 
 
-Partitioning is a fundamental component for parallel data processing. It reduces computer resources when only a sub-part of relevant data are involved in a query, and distributes tasks evenly when the query concerns a large number of partitions. This hence globally improves the query performances. 
+Partitioning is a fundamental component for parallel data processing. It reduces computer resources when only a sub-part of relevant data are involved in a query, and distributes tasks evenly when the query concerns a large number of partitions. This hence globally improves query performances. 
 
 Partitioning is a mandatory  process for executing astronomical queries efficiently in ASTROIDE.
 
@@ -79,7 +82,7 @@ The above line can be explained as:
 
 - *infile*: path to input file on HDFS where astronomical data are stored
 
-- *separator*: separator used in the input file (e.g. "," or "|")
+- *separator*: separator used in the input file (e.g. ",")
 
 - *outfile*: path to output parquet file on HDFS where astronomical data will be stored after partitioning 
 
@@ -110,11 +113,10 @@ Or using schema:
 	$ spark-submit --class fr.uvsq.adam.astroide.executor.BuildHealpixPartitioner $ASTROIDE_HOME/ProjectJar/astroide.jar -fs hdfs://localhost:8020  $ASTROIDE_HOME/ExampleData/tycho2Schema.txt data/tycho2.gz "|" partitioned/tycho2.parquet 32 12 ra dec $ASTROIDE_HOME/tycho2.txt
 
 
-ASTROIDE retrieves partition boundaries and stores them as metadata. Note that in our case, all we need to store are the three values (n, l, u) where n is the partition number, l is
-the first HEALPix cell of the partition number n and u is the last HEALPix cell of the partition number n. It should also be noted that we store the partitioned files, along with the
-metadata, on HDFS and use them for future queries.
+ASTROIDE retrieves partition boundaries and stores them as metadata. Note that in our case, all we need to store are the three values (*n*, *l*,*u*) where *n* is the partition number, *l* is
+the first HEALPix cell of the partition number *n* and *u* is the last HEALPix cell of the partition number *n*. It should also be noted that we store the partitioned files, along with the metadata, on HDFS and use them for future queries.
 
-Below is an example of small file with 5 partitions:
+Below is an example of a small file with 5 partitions:
 
     $ cat $ASTROIDE_HOME/gaia.txt
     
@@ -124,7 +126,7 @@ Below is an example of small file with 5 partitions:
     [2,178807,268308]
     
     
-The partitioned file will be stored as a parquet file that looks like: 
+The partitioned file is stored as a parquet file that looks like: 
 
 	$ hdfs dfs -ls partitioned/gaia.parquet/
 
@@ -141,7 +143,7 @@ The partitioned file will be stored as a parquet file that looks like:
 
 AstroSpark focuses on three main basic astronomical queries, these queries require more calculations than ordinary search or join in legacy relational databases:
 
-- Cone Search is one of the most frequent queries in the astronomical domain. It returns a set of stars whose positions lie within a circular region of the sky. 
+- Cone Search is one of the most frequent queries in the astronomical domain. It returns the set of stars whose positions lie within a circular region of the sky. 
 
 - Cross-Matching query aims at identifying and comparing astronomical objects belonging to different observations of the same sky region. 
 
@@ -153,13 +155,13 @@ Note: Please make sure that your data has been already partitioned to execute as
 
 After data partitioning, you can start executing astronomical queries using ADQL. 
 
-ASTROIDE supports ADQL Standard. It includes three kinds of astronomical operators as follows. All these operators can be directly passed to astroide throught *queryFile*
+ASTROIDE supports ADQL Standard. It includes three kinds of astronomical operators as follows. All these operators can be directly passed to ASTROIDE throught *queryFile*
 
 
     $ spark-submit --class fr.uvsq.adam.astroide.executor.AstroideQueries [--master <master-url>] <astroide.jar> -fs <hdfs> <file1> <file2> <healpixOrder> <queryFile> <action> [<outfile>]
     
 
-> For KNN & ConeSearch queries 
+> For kNN & ConeSearch queries 
 
 
 
@@ -221,7 +223,7 @@ Example:
 
 ## Queries Examples
 
-These are some correct ADQL queries that you can refer to test in ASTROIDE.
+These are some correct ADQL queries that you can refer to execute queries in ASTROIDE.
 
 You can save only one query in a text file and run your application using `fr.uvsq.adam.astroide.executor.AstroideQueries`. 
 
@@ -236,7 +238,7 @@ You can save only one query in a text file and run your application using `fr.uv
     
     SELECT ra,dec,ipix FROM (SELECT * FROM table WHERE 1=CONTAINS(point('icrs',ra,dec),circle('icrs', 44.97845893652677, 0.09258081167082206, 0.05))) As t;
     
-### KNN Queries 
+### kNN Queries 
 
     SELECT TOP 10 *, DISTANCE(Point('ICRS', ra, dec), Point('ICRS', 44.97845893652677, 0.09258081167082206)) AS dist FROM table ORDER BY dist;
         
@@ -252,8 +254,8 @@ You can save only one query in a text file and run your application using `fr.uv
     SELECT * FROM (SELECT table.source_id, table.ipix, table2.ipix FROM table JOIN table2 ON 1=CONTAINS(point('icrs',table.ra,table.dec),circle('icrs',table2.ra,table2.dec,0.01))) AS t;
 
   
-Please consider that ASTROIDE translates these three types of queries into internal representation. ASTROIDE doesn't translate all features of ADQL language. 
-For example, the second KNN query is translated into an equivalent query as follows: 
+Please consider that ASTROIDE translates these three types of queries into internal representation. ASTROIDE does not translate all features of ADQL language. 
+For example, the second kNN query is translated into an equivalent query as follows: 
 
     == Translated Query ==
     SELECT t.ra , t.dec , t.dist
@@ -285,31 +287,32 @@ If you need to test other queries using the DataFrame interface, you can refer t
 
     spark-submit --class fr.uvsq.adam.astroide.executor.RunCrossMatch <application-jar> <file1> <file2> <radius> <healpixOrder>
 
-Cross matching imports this package
+Cross matching needs to import this package
 
     import fr.uvsq.adam.astroide.queries.optimized.CrossMatch._
 
-Given a dataFrame representing the first dataset, this class execute a crossmatch using a precised radius by doing the following:
+Given a dataFrame representing the first dataset, this class executes a crossmatch using a precised radius as follows:
 
     val output = df1.ExecuteXMatch(session, df2, radius)
 
 This produces a new dataframe called output which is the result of crossmatching two input dataframes. 
 
 
+
 ## Publications
 
-1. M. BRAHEM, K. Zeitouni, and L. Yeh. ASTROIDE: A unified astronomical big data processing
+* M. BRAHEM, K. Zeitouni, and L. Yeh. ASTROIDE: A unified astronomical big data processing
 engine over spark. IEEE Transactions on Big Data, 2018 [(Link)](http://perso.prism.uvsq.fr/users/zeitouni/papers/TBD2018_Preprint.pdf)
 
-2. M. BRAHEM, K. Zeitouni, and L. Yeh. Efficient astronomical query processing using spark. In
+* M. BRAHEM, L. Yeh and K. Zeitouni. Efficient astronomical query processing using spark. In
 In 26th ACM SIGSPATIAL International Conference on Advances in Geographic Information
-Systems, SIGSPATIAL ’18, New York, NY, USA, 2018. ACM [(Link)](http://perso.prism.uvsq.fr/users/zeitouni/papers/SIGSPATIAL2018_Preprint.pdf)
+Systems, SIGSPATIAL, 2018 [(Link)](http://perso.prism.uvsq.fr/users/zeitouni/papers/SIGSPATIAL2018_Preprint.pdf)
 
-3. M. BRAHEM, K. Zeitouni, and L. Yeh. HX-MATCH: in-memory cross-matching algorithm
+* M. BRAHEM, K. Zeitouni, and L. Yeh. HX-MATCH: in-memory cross-matching algorithm
 for astronomical big data. In Advances in Spatial and Temporal Databases - 15th International
-Symposium, SSTD 2017, Arlington, VA, USA, August 21-23, 2017, Proceedings, 2017
+Symposium, SSTD, 2017
 
-4. M. BRAHEM, K. Zeitouni, and L. Yeh. Astrospark: towards a distributed data server for big
+* M. BRAHEM, K. Zeitouni, and L. Yeh. Astrospark: towards a distributed data server for big
 data in astronomy. In Proceedings of the 3rd ACM SIGSPATIAL PhD Symposium. ACM, 2016
 
 

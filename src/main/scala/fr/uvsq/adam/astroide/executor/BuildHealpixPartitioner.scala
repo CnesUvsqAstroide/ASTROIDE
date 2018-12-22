@@ -111,6 +111,9 @@ object BuildHealpixPartitioner extends AstroideSession {
 
     try {
 
+      /**
+        * never used (healpix class path verification)
+        */
       val healpixClass = new Pointing(0, 0)
 
       val start = System.currentTimeMillis()

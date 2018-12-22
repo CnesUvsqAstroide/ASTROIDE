@@ -1,6 +1,6 @@
 ### Requêtage de données scientifiques: “FITSOIDE”
 
-####Groupe DataScale:
+###Groupe DataScale:
 
 - ABID Soukaina
 - ATTOUT Mohamed El Amine
@@ -9,7 +9,7 @@
 - HAYANI Youssef
 - LAKRAFLI Chaymae
 
-####I. Etat d’avancement:
+###I. Etat d’avancement:
 
  **Tâche                                                                
 
@@ -27,7 +27,7 @@
 
 7. Optimisation physique avec les heuristiques.                       
   
-  ####II. To do list:
+  ###II. To do list:
   
 To Do!!
 - Lire le sujet et les références.

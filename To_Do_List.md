@@ -29,3 +29,19 @@
   
   ####II. To do list:
   
+To Do!!
+- Lire le sujet et les références.
+
+- Effectuer une comparaison entre Spark-FITS et ASTROIDE.
+
+- Mettre en place le connecteur FITS pour le lire au lieu du CSV.
+
+- Remplacer la librairie de la NASA par une autre équivalente : la librairie HEALPix en Java qui vient d’être publiée par le CDS.
+
+- Installer le projet ASTROIDE sur nos machines (et Spark-FITS également?).
+
+- Intégrer Spark-FITS à ASTROIDE.
+
+- Optimiser les requêtes : analyse syntaxique et sémantique du langage. Il y a l’optimisation logique et physique (les heuristiques).
+
+-Définir un type tableau multidimensionnel  et des requêtes de manipulation .

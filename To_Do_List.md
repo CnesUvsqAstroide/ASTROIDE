@@ -44,4 +44,4 @@ To Do!!
 
 - Optimiser les requêtes : analyse syntaxique et sémantique du langage. Il y a l’optimisation logique et physique (les heuristiques).
 
--Définir un type tableau multidimensionnel  et des requêtes de manipulation .
+- Définir un type tableau multidimensionnel  et des requêtes de manipulation .

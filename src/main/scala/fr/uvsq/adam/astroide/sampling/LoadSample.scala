@@ -18,21 +18,21 @@
 package fr.uvsq.adam.astroide.sampling
 
 import org.apache.spark.sql.SparkSession
-""" import data files """
+// import data files 
 object LoadSample {
 
   def main(args: Array[String]) {
 
-	""" Create  Spark session"""
+	// Create  Spark session
     val spark = SparkSession.builder().getOrCreate()
 
-	""" For implicit conversions: to convert Scala objects (incl. RDDs) into 
-a Dataset, DataFrame, Columns or supporting such conversions (through Encoders)"""
+	// For implicit conversions: to convert Scala objects (incl. RDDs) into 
+//a Dataset, DataFrame, Columns or supporting such conversions (through Encoders)
     import spark.implicits._
 	
-	"""Use first line of all files as header """
+	//Use first line of all files as header 
     val inputDataframe = spark.read.option("header", "true").csv(args(0).toString)
-	""" sample the inputDataframe to buil the model """
+	// sample the inputDataframe to buil the model 
     val sampleData = inputDataframe.sample(false, args(1).toDouble)
 
     sampleData.write.options(Map("header" -> "true")).options(Map("codec" -> "org.apache.hadoop.io.compress.GzipCodec")).csv((args(2).toString))

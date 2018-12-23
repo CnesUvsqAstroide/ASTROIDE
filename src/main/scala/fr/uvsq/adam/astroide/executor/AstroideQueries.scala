@@ -69,7 +69,8 @@ object AstroideQueries extends AstroideSession {
         throw new IllegalArgumentException(s"${RED}Unknown argument $option");
     }
   }
-
+/** Verfier les fichier **/
+ 
   def checkFile(file: String, hdfs: String) = {
     if (!DirCheck.dirExists(file, hdfs)) {
       throw new IOException(s"${RED}Input file " + file + " does not exist in HDFS" + Console.RESET)
@@ -81,19 +82,19 @@ object AstroideQueries extends AstroideSession {
       throw new Exception(s"${RED}Input file " + file + " should be partitioned in parquet format\n Please use: " + BuildHealpixPartitioner.usage + Console.RESET)
     }
   }
-
+/** Verifier les ordres**/
   def checkOrder(order: Int) = {
     if (order < 0 || order > 29) {
       throw new Exception(s"${RED}HEALPix order should be in range [0,29]" + Console.RESET)
     }
   }
-
+/** Verifier les action **/
   def checkAction(action: String) = {
     val ListAction = List("count", "show", "save")
     if (!ListAction.contains(action))
       throw new Exception(s"${RED}Action should be listed in " + ListAction + Console.RESET)
   }
-
+/* Verifier les output des actions**/
   def checkOutput(action: String, output: String) = {
     if (action == "save" && output == "None")
       throw new Exception(s"${RED}Please specify an output file to save result" + Console.RESET)

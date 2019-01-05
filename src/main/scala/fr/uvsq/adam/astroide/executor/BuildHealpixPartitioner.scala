@@ -42,14 +42,17 @@ object BuildHealpixPartitioner extends AstroideSession {
 
   def parseArguments(map: OptionMap, arguments: List[String]): OptionMap = {
     arguments match {
-
       case Nil => map
       case "-fs" :: hdfs :: tail =>
         parseArguments(map ++ Map('hdfs -> hdfs), tail)
-      case schema :: infile :: separator :: outfile :: capacity :: healpixlevel :: column1 :: column2 :: boundariesfile :: Nil =>
-        map ++ Map('schema -> schema) ++ Map('infile -> infile) ++ Map('separator -> separator) ++ Map('outfile -> outfile) ++ Map('capacity -> capacity.toDouble) ++ Map('healpixlevel -> healpixlevel.toInt) ++ Map('column1 -> column1) ++ Map('column2 -> column2) ++ Map('boundariesfile -> boundariesfile)
+      case "-schema" :: schema :: tail =>
+        parseArguments(map ++ Map('schema -> schema), tail)
+      case "-hdu" :: hdu :: tail =>
+        parseArguments(map ++ Map('hdu -> hdu), tail)
       case infile :: separator :: outfile :: capacity :: healpixlevel :: column1 :: column2 :: boundariesfile :: Nil =>
-        map ++ Map('schema -> None) ++ Map('infile -> infile) ++ Map('separator -> separator) ++ Map('outfile -> outfile) ++ Map('capacity -> capacity.toDouble) ++ Map('healpixlevel -> healpixlevel.toInt) ++ Map('column1 -> column1) ++ Map('column2 -> column2) ++ Map('boundariesfile -> boundariesfile)
+        map ++ Map('infile -> infile) ++ Map('separator -> separator) ++ Map('outfile -> outfile) ++ Map('capacity -> capacity.toDouble) ++ Map('healpixlevel -> healpixlevel.toInt) ++ Map('column1 -> column1) ++ Map('column2 -> column2) ++ Map('boundariesfile -> boundariesfile)
+      case infile :: outfile :: capacity :: healpixlevel :: column1 :: column2 :: boundariesfile :: Nil =>
+        map ++ Map('infile -> infile) ++ Map('separator -> None) ++ Map('outfile -> outfile) ++ Map('capacity -> capacity.toDouble) ++ Map('healpixlevel -> healpixlevel.toInt) ++ Map('column1 -> column1) ++ Map('column2 -> column2) ++ Map('boundariesfile -> boundariesfile)
       case option :: tail =>
         println(usage)
         throw new IllegalArgumentException(s"${RED}Unknown argument $option" + RESET);
@@ -67,16 +70,20 @@ object BuildHealpixPartitioner extends AstroideSession {
     val configuration = parseArguments(Map(), args.toList)
     println(configuration)
 
-    val schema = configuration('schema).toString
+    val schema = if(configuration.contains('schema)) configuration('schema).toString
+                 else None.toString()
     val hdfs = configuration('hdfs).toString
     var input = configuration('infile).toString
     val separator = configuration('separator).toString
+    val hdu = if(configuration.contains('hdu)) configuration('hdu).toString
+              else None.toString
     val output = configuration('outfile).toString
     val capacity_hdfs = configuration('capacity).asInstanceOf[Double]
     val level_healpix = configuration('healpixlevel).asInstanceOf[Int]
     val column1 = configuration('column1).toString
     val column2 = configuration('column2).toString
     val boundaries = configuration('boundariesfile).toString
+
 
     import astroideSession.implicits._
 
@@ -89,19 +96,39 @@ object BuildHealpixPartitioner extends AstroideSession {
       throw new IOException(s"${RED}Input file " + input + " does not exist" + RESET)
     }
 
-    val format = List("csv", "gz")
+    val format = List("csv", "gz","fits")
 
     if (!format.contains(FilenameUtils.getExtension(input)))
-      throw new Exception(s"${RED}Input file " + input + " should be in csv format" + RESET)
+      throw new Exception(s"${RED}Input file " + input + " should be in csv or fits format" + RESET)
 
+
+    def ParseAndLoadDataFrame(structSchema : Any) = {
+
+    }
 
     val Dataframe = if (schema == "None") {
-      astroideSession.read.format("csv").option("delimiter", separator).option("header", true).load(input)
+      if (FilenameUtils.getExtension(input) == "csv" || FilenameUtils.getExtension(input) == "gz")
+        astroideSession.read.format("csv").option("delimiter", separator).option("header", true).load(input)
+      else if (FilenameUtils.getExtension(input) == "fits"){
+        if(hdu != None)
+          astroideSession.read.format("fits").option("hdu", hdu).option("header", true).load(input)
+        else
+          throw new Exception("argument Hdu not found");
+      }
+      else null
     }
     else {
       val schemaString = Source.fromFile(schema).getLines.mkString
       val structSchema = StructType(schemaString.split(",").map(fieldName => StructField(fieldName, StringType, true)))
-      astroideSession.read.format("csv").option("delimiter", separator).option("header", true).schema(structSchema).load(input)
+      if (FilenameUtils.getExtension(input) == "csv" || FilenameUtils.getExtension(input) == "gz")
+        astroideSession.read.format("csv").option("delimiter", separator).option("header", true).schema(structSchema).load(input)
+      else if (FilenameUtils.getExtension(input) == "fits"){
+        if(hdu != None)
+          astroideSession.read.format("fits").option("hdu", hdu).option("header", true).schema(structSchema).load(input)
+        else
+          throw new Exception("argument Hdu not found");
+      }
+      else null
     }
 
     if (level_healpix < 0 || level_healpix > 29) {

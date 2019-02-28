@@ -74,8 +74,11 @@ object AstroideQueries extends AstroideSession {
     if (!DirCheck.dirExists(file, hdfs)) {
       throw new IOException(s"${RED}Input file " + file + " does not exist in HDFS" + Console.RESET)
     }
-    else if (FilenameUtils.getExtension(file) != "parquet")
+    else if (FilenameUtils.getExtension(file) != "parquet"){
+      print("ici")
       throw new Exception(s"${RED}Input file " + file + " should be partitioned in parquet format" + Console.RESET)
+
+    }
 
     else if (!DirCheck.dirParquet(file, hdfs)) {
       throw new Exception(s"${RED}Input file " + file + " should be partitioned in parquet format\n Please use: " + BuildHealpixPartitioner.usage + Console.RESET)

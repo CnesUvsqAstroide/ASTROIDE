@@ -53,7 +53,9 @@ object AstroideUDF {
 
   def getParameters(condition: String) = {
 
-    condition.substring(condition.toString().indexOf("SphericalDistance")).split("""[(|,<|)]""").filterNot(s => s.isEmpty || s.trim.isEmpty)
+    condition.substring(condition.toString().indexOf("SphericalDistance")).split("""[(|,<|)]""").filterNot(s => s.isEmpty || s.trim.isEmpty).filterNot(s => s.contains("cast"))
+    //condition.substring(condition.toString().indexOf("SphericalDistance")).split("""[(|,<|)]""").filterNot(s => s.isEmpty || s.trim.isEmpty)
+
   }
 
 

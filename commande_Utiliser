@@ -1,46 +1,45 @@
+---------------------
 
 
-/partionner 
-spark-submit --jars /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --class fr.uvsq.adam.astroide.executor.BuildHealpixPartitioner  /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 hdfs://localhost:8000/user/hayani/data/gaia.csv "," partitioned/gaia.parquet 32 12 ra dec /home/hayani/Téléchargements/ASTROIDE/ExampleData/gaia.txt
-
-//test
-park-submit --jars /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --class fr.uvsq.adam.astroide.executor.BuildHealpixPartitioner  /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 hdfs://localhost:8000/user/hayani/data/Gaia.fits "," partitioned/gaia-fits.parquet 32 12 ra dec /home/hayani/Téléchargements/ASTROIDE/ExampleData/gaia-fits.txt
+partionnement sur fits : 
+ spark-submit --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --jars /home/hayani/Téléchargements/ASTROIDE/libs/spark-fits_2.11-0.7.2.jar  --class fr.uvsq.adam.astroide.executor.BuildHealpixPartitioner  /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 -hdu 1 hdfs://localhost:8000/user/hayani/data/GaiaSource_000-000-000.fits  partitioned/gaiafits.parquet 16 12  ra dec /home/hayani/gaiafits.txt
 
 
 
 
-/executer Requete
+requête cross match :
+
+fits : 
+
+spark-submit --jars /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/adql1.3.jar --class fr.uvsq.adam.astroide.executor.AstroideQueries /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 hdfs://localhost:8000/user/hayani/Gaiafits.parquet  hdfs://localhost:8000/user/hayani/Gaiafits.parquet 12 /home/hayani/Téléchargements/ASTROIDE/ExampleQuery/cross-match.txt show
+
+cvs : 
+spark-submit --jars /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/adql1.3.jar --class fr.uvsq.adam.astroide.executor.AstroideQueries /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 hdfs://localhost:8000/user/hayani/gaia.parquet  hdfs://localhost:8000/user/hayani/gaia.parquet 12 /home/hayani/Téléchargements/ASTROIDE/ExampleQuery/cross-match.txt show
+__________________
+
+
+ requête  knn : 
+
+cvs : 
+spark-submit --jars /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/adql1.3.jar --class fr.uvsq.adam.astroide.executor.AstroideQueries /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 hdfs://localhost:8000/user/hayani/gaia.parquet /home/hayani/Téléchargements/ASTROIDE/ExampleData/gaia.txt 12 /home/hayani/Téléchargements/ASTROIDE/ExampleQuery/knn.txt show
+
+
+fits : 
+
+spark-submit --jars /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/adql1.3.jar --class fr.uvsq.adam.astroide.executor.AstroideQueries /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 hdfs://localhost:8000/user/hayani/Gaiafits.parquet /home/hayani/SchemaGaiafits.txt 12 /home/hayani/Téléchargements/ASTROIDE/ExampleQuery/knn.txt show
+
+
+
+______________________
+
+consearch :
+
+
+fits :
+
+spark-submit --jars /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/adql1.3.jar --class fr.uvsq.adam.astroide.executor.AstroideQueries /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 hdfs://localhost:8000/user/hayani/Gaiafits.parquet /home/hayani/SchemaGaiafits.txt 12 /home/hayani/Téléchargements/ASTROIDE/ExampleQuery/conesearch.txt show
+
+
+csv :
+
 spark-submit --jars /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/adql1.3.jar --class fr.uvsq.adam.astroide.executor.AstroideQueries /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 hdfs://localhost:8000/user/hayani/gaia.parquet /home/hayani/Téléchargements/ASTROIDE/ExampleData/gaia.txt 12 /home/hayani/Téléchargements/ASTROIDE/ExampleQuery/conesearch.txt show
-
-//TEST :
-
-spark-submit --jars /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/adql1.3.jar --class fr.uvsq.adam.astroide.executor.AstroideQueries /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 hdfs://localhost:8000/user/hayani/partitioned/test_fits_create.parquet /home/hayani/Téléchargements/ASTROIDE/ExampleData/G_fits_create.txt 12 /home/hayani/Téléchargements/ASTROIDE/ExampleQuery/conesearch.txt show
-
-
-partitioned/gaia-fits.parquet
-
-
-
-Avec schema 
-spark-submit --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --jars /home/hayani/Téléchargements/ASTROIDE/libs/spark-fits_2.11-0.7.2.jar  --class fr.uvsq.adam.astroide.executor.BuildHealpixPartitioner  /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 -schema /home/hayani/Téléchargements/ASTROIDE/ExampleData/tycho2Schema.txt hdfs://localhost:8000/user/hayani/data/tycho2.gz "|" partitioned/test_gaia.parquet 32 12 ra dec /home/hayani/Téléchargements/ASTROIDE/ExampleData/tycho2.txt 
-
-
-
-
-
-
-
-sans schema fits :
-
-spark-submit --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --jars /home/hayani/Téléchargements/ASTROIDE/libs/spark-fits_2.11-0.7.2.jar  --class fr.uvsq.adam.astroide.executor.BuildHealpixPartitioner  /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 -hdu 1 hdfs://localhost:8000/user/hayani/data/test_file.fits partitioned/test_fits_create.parquet 16 12  ra dec /home/hayani/Téléchargements/ASTROIDE/ExampleData/test_fits_create.txt
-
-//test 
-spark-submit --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --jars /home/hayani/Téléchargements/ASTROIDE/libs/spark-fits_2.11-0.7.2.jar  --class fr.uvsq.adam.astroide.executor.BuildHealpixPartitioner  /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 -hdu 1 hdfs://localhost:8000/user/hayani/data/test_file.fits partitioned/test_fits_create.parquet 16 12  ra dec /home/hayani/Téléchargements/ASTROIDE/ExampleData/G_fits_create.txt
-
-
-sans schema cvs or gv : 
-
-spark-submit --driver-class-path /home/hayani/Téléchargements/ASTROIDE/libs/healpix-1.0.jar --jars /home/hayani/Téléchargements/ASTROIDE/libs/spark-fits_2.11-0.7.2.jar  --class fr.uvsq.adam.astroide.executor.BuildHealpixPartitioner  /home/hayani/Téléchargements/ASTROIDE/build/libs/ASTROIDE.jar -fs hdfs://localhost:8000 hdfs://localhost:8000/user/hayani/data/test_file.fits partitioned/test_fits_create.parquet 16 12  ra dec /home/hayani/Téléchargements/ASTROIDE/ExampleData/test_fits_create.txt 
-
-
-

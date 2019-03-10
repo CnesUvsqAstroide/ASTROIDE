@@ -40,6 +40,8 @@ object BuildHealpixPartitioner extends AstroideSession {
 
   type OptionMap = Map[Symbol, Any]
 
+
+    //update of the parseArguments functions for accepted the new parameter udu
   def parseArguments(map: OptionMap, arguments: List[String]): OptionMap = {
     arguments match {
       case Nil => map
@@ -66,6 +68,8 @@ object BuildHealpixPartitioner extends AstroideSession {
     */
 
   def main(args: Array[String]) {
+
+    //get paramerters
 
     val configuration = parseArguments(Map(), args.toList)
     println(configuration)
@@ -98,6 +102,7 @@ object BuildHealpixPartitioner extends AstroideSession {
 
     val format = List("csv", "gz","fits")
 
+    // check format file if ( cvs or fits )
     if (!format.contains(FilenameUtils.getExtension(input)))
       throw new Exception(s"${RED}Input file " + input + " should be in csv or fits format" + RESET)
 
@@ -109,6 +114,8 @@ object BuildHealpixPartitioner extends AstroideSession {
     val Dataframe = if (schema == "None") {
       if (FilenameUtils.getExtension(input) == "csv" || FilenameUtils.getExtension(input) == "gz")
         astroideSession.read.format("csv").option("delimiter", separator).option("header", true).load(input)
+     // read format fits :
+
       else if (FilenameUtils.getExtension(input) == "fits"){
         if(hdu != None)
           astroideSession.read.format("fits").option("hdu", hdu).option("header", true).load(input)
@@ -122,6 +129,9 @@ object BuildHealpixPartitioner extends AstroideSession {
       val structSchema = StructType(schemaString.split(",").map(fieldName => StructField(fieldName, StringType, true)))
       if (FilenameUtils.getExtension(input) == "csv" || FilenameUtils.getExtension(input) == "gz")
         astroideSession.read.format("csv").option("delimiter", separator).option("header", true).schema(structSchema).load(input)
+
+      // read format fits with schema
+
       else if (FilenameUtils.getExtension(input) == "fits"){
         if(hdu != None)
           astroideSession.read.format("fits").option("hdu", hdu).option("header", true).schema(structSchema).load(input)

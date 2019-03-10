@@ -51,6 +51,7 @@ object AstroideUDF {
     spark.udf.register("SphericalDistance", (x: Double, y: Double, x2: Double, y2: Double) => sphericalDistance(x, y, x2, y2))
   }
 
+  //substring les parametres de la requetes :
   def getParameters(condition: String) = {
 
     condition.substring(condition.toString().indexOf("SphericalDistance")).split("""[(|,<|)]""").filterNot(s => s.isEmpty || s.trim.isEmpty).filterNot(s => s.contains("cast"))

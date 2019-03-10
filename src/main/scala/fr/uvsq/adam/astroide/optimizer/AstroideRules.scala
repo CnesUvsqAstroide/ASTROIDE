@@ -37,7 +37,7 @@ object AstroideRules {
     * Inject cone search rule in filter operator that uses spherical distance expression
     *
     */
-
+  // changer l'ordre de parameters pour collecter les cells
   case class ConeSearchRule(spark: SparkSession) extends Rule[LogicalPlan] {
 
     @throws(classOf[Exception])
@@ -52,8 +52,11 @@ object AstroideRules {
           var boundaries = Boundaries.ReadFromFile(astroideVariables.getFile2())
 
           val parameters = AstroideUDF.getParameters(condition.toString())
+          //println(parameters.length);
+          //for(p <- parameters)
+           // println(p);
 
-          var coneSearchCells = ConeSearchCells.getCells(astroideVariables.getOrder(), parameters(5).toDouble, parameters(6).toDouble, parameters(7).toDouble).sorted
+          var coneSearchCells = ConeSearchCells.getCells(astroideVariables.getOrder(), parameters(3).toDouble, parameters(4).toDouble, parameters(5).toDouble).sorted
 
           val intervals = coneSearchCells.distinct.toSet[Any]
 
@@ -72,6 +75,9 @@ object AstroideRules {
     * Identify knn trees and inject rules to filter selected partitions (or execute a cone search with limit)
     *
     */
+
+
+  // changer l'ordre de parametres pour collecter theta et phi pour les requetes de type Knn
   case class kNNRule(spark: SparkSession) extends Rule[LogicalPlan] {
 
     @throws(classOf[Exception])
@@ -84,11 +90,15 @@ object AstroideRules {
         if (condition.contains("SphericalDistance")) {
 
           val parameters = AstroideUDF.getParameters(condition)
-
           var boundaries = Boundaries.ReadFromFile(astroideVariables.getFile2())
+          println(parameters.length);
+          for(p <- parameters)
+           println(p);
+         // val coordinates1 = parameters(5)
+         // val coordinates2 = parameters(6)
 
-          val coordinates1 = parameters(5)
-          val coordinates2 = parameters(6)
+          val coordinates1 = parameters(3)
+          val coordinates2 = parameters(4)
 
           val theta = (90 - (coordinates2.toDouble)).toRadians
           val phi = (coordinates1.toDouble).toRadians
@@ -100,8 +110,9 @@ object AstroideRules {
           val nump = child.outputSet.toList.find(x => x.toString().contains("nump"))
 
           val newfilter = EqualTo(ExpressionSet(nump).head, Literal(overlappingPartition(0).toInt))
+         // var coneSearchCells = ConeSearchCells.getCells(astroideVariables.getOrder(), parameters(5).toDouble, parameters(6).toDouble, astroideVariables.getRadius()).sorted
 
-          var coneSearchCells = ConeSearchCells.getCells(astroideVariables.getOrder(), parameters(5).toDouble, parameters(6).toDouble, astroideVariables.getRadius()).sorted
+          var coneSearchCells = ConeSearchCells.getCells(astroideVariables.getOrder(), parameters(3).toDouble, parameters(4).toDouble, astroideVariables.getRadius()).sorted
 
           val RangePartition = KNNCells.getRange(boundaries, overlappingPartition(0))
 
@@ -153,8 +164,8 @@ object AstroideRules {
 
           var boundaries = Boundaries.ReadFromFile(astroideVariables.getFile2())
 
-          val coordinates1 = parameters(5)
-          val coordinates2 = parameters(6)
+          val coordinates1 = parameters(4)
+          val coordinates2 = parameters(5)
 
           val theta = (90 - (coordinates2.toDouble)).toRadians
           val phi = (coordinates1.toDouble).toRadians

@@ -82,9 +82,11 @@ object AstroideStrategies {
 
       case j@Join(left, right, _, Some(condition)) if condition.toString().contains("SphericalDistance") => {
 
+        println("in")
+
         val ipix1 = left.outputSet.find(x => x.toString().contains("ipix"))
         val ipix = right.outputSet.find(x => x.toString().contains("ipix"))
-
+        println(Seq(ipix.last.toAttribute));
         val udfNeighbours = ScalaUDF((ipix: Long) => ipix +: HealpixProc.neighboursNest(astroideVariables.getOrder(), ipix), ArrayType(LongType), Seq(ipix.last.toAttribute))
 
         val explode = Explode(udfNeighbours)
